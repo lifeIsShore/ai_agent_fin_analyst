@@ -26,7 +26,9 @@ Update this as you go. This is what you (or an agent picking up this project) sh
 - [ ] Shown to a real person, feedback captured
 
 ### Phase 3 — Third project (Layer 4: full AI application)
-- [ ] Chosen project
+- [ ] Chosen project: **Advanced Multi-Year DCF Insight Engine**
+- [ ] Feature: Parse 5+ years of historical reports (folder ingestion) to calculate historical CAGRs and trends.
+- [ ] Feature: Build "Insight Generation Prompt" (LLM uses MD&A insights + historical data to dynamically project future growth rates year-by-year).
 - [ ] Deployed somewhere real (not just localhost)
 - [ ] Monitoring/evaluation in place
 - [ ] Architecture entry
