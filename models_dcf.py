@@ -1,10 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-class RawLineItem(BaseModel):
-    name: str = Field(description="The exact name of the line item as reported by the company.")
-    value: float = Field(description="The reported value.")
-
 class IncomeStatement(BaseModel):
     revenue: float = Field(description="Total revenue or sales.")
     cogs: float = Field(description="Cost of goods sold or cost of revenue.")
@@ -14,7 +10,6 @@ class IncomeStatement(BaseModel):
     interest_expense: float = Field(description="Interest expense.")
     taxes: float = Field(description="Income tax expense.")
     net_income: float = Field(description="Net income.")
-    raw_items: List[RawLineItem] = Field(description="List of all raw line items found in the income statement for transparency.")
 
 class BalanceSheet(BaseModel):
     cash: float = Field(description="Cash and cash equivalents.")
@@ -24,12 +19,10 @@ class BalanceSheet(BaseModel):
     total_debt: float = Field(description="Total short-term and long-term debt.")
     total_liabilities: float = Field(description="Total liabilities.")
     shareholders_equity: float = Field(description="Total shareholders' equity.")
-    raw_items: List[RawLineItem] = Field(description="List of all raw line items found in the balance sheet for transparency.")
 
 class CashFlowStatement(BaseModel):
     operating_cash_flow: float = Field(description="Net cash provided by operating activities.")
     capex: float = Field(description="Capital expenditures (purchases of property, plant, and equipment). Usually a negative number, convert to positive.")
-    raw_items: List[RawLineItem] = Field(description="List of all raw line items found in the cash flow statement for transparency.")
 
 class CompanyFinancials(BaseModel):
     company_name: str = Field(description="Name of the company.")
