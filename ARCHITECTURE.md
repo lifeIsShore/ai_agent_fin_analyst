@@ -77,4 +77,35 @@ If running locally, inference compute (GPU/RAM) would bottleneck immediately und
 **What's the ROI story in one sentence?** 
 Saves the finance team hours of manual data entry per week by instantly converting messy PDFs into clean, calculated spreadsheet rows.
 
+### Project 2: DCF Financial Analyst Agent (Enterprise Integration)
+
+**Diagram:**
+```
+Corporate PDF (100+ pages)
+   ↓
+Dynamic Pre-Processor (Digit Density Scoring)
+   ↓
+LLM Extraction (Qwen 2.5 - Strict 3-Statement JSON Schema)
+   ↓
+Python DCF Math Engine ← → Yahoo Finance API (Live Market Data)
+   ↓
+Excel Valuation Output (Base/Bull/Bear Scenarios & Target Price)
+```
+
+**Explain each box in one sentence, no jargon:**
+- **Dynamic Pre-Processor:** Scans massive reports and mathematically isolates just the pages containing financial tables, saving the AI from reading 100 pages of fluff.
+- **LLM Extraction:** An AI that reads the complex, messy financial tables (even in different languages) and organizes the core numbers into a strict, standardized format.
+- **Python DCF Math Engine:** Code that links the financial statements together, applies corporate finance rules, and projects future cash flows.
+- **Yahoo Finance API:** An external live connection that pulls the company's real-time stock price and risk metrics (Beta) so the valuation is always up to date.
+- **Excel Valuation Output:** The final deliverable that a human analyst can open, review, and trust because all the math is transparently embedded in the spreadsheet.
+
+**Where does data live, and who can see it?**
+Runs locally. Integrates with a public external API for market data, but no proprietary company data leaves the machine.
+
+**What would break first if this had 100x the users?**
+Yahoo Finance API rate limits would immediately block 100x concurrent requests. We would need a paid enterprise data feed (like Bloomberg or FactSet APIs).
+
+**What's the ROI story in one sentence?** 
+Reduces the time it takes an equity analyst to build a baseline 3-statement DCF model from 4 hours to 45 seconds, standardizing inputs across global markets.
+
 (add new entries below as you complete projects)
