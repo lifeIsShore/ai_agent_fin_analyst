@@ -3,19 +3,19 @@
 Update this as you go. This is what you (or an agent picking up this project) should read first to know where things stand.
 
 ## Current phase
-**Phase 0 — Setup** (edit this line as you move phases)
+**Phase 1 — First project**
 
 ## Phase checklist
 
 ### Phase 0 — Setup
-- [ ] Read `ROADMAP.md` fully
-- [ ] Pick Project 1 from `PROJECTS.md`
-- [ ] Set up dev environment (Python, Git, editor)
+- [x] Read `ROADMAP.md` fully
+- [x] Pick Project 1 from `PROJECTS.md`
+- [x] Set up dev environment (Python, Git, editor)
 
 ### Phase 1 — First project (Layer 1 + 2 focus)
-- [ ] Scoped the problem in one paragraph
-- [ ] Built v1
-- [ ] Filled in `ARCHITECTURE.md` entry for it
+- [x] Scoped the problem in one paragraph
+- [x] Built v1
+- [x] Filled in `ARCHITECTURE.md` entry for it
 - [ ] Showed it to one real person
 - [ ] Wrote the one-page business case
 
@@ -42,3 +42,4 @@ Update this as you go. This is what you (or an agent picking up this project) sh
 (freeform space — date-stamp entries as you go)
 
 - 2026-08-25: Project initialized.
+- 2026-08-26: Completed v1 of Project 1 (Invoice Extractor). Transitioning to Project 2 (DCF Agent with API integration).

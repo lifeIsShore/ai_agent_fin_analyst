@@ -23,8 +23,8 @@ A good project for this roadmap:
 ## Starter project ideas (roughly increasing in complexity)
 
 ### 1. Document/PDF intelligence tool
-You discover that small Mittelstand companies spend hours extracting information from PDFs. You build a tiny document-analysis tool.
-- **Trains:** Python → APIs → LLMs → RAG → databases → authentication → UI → deployment → pricing → customer discovery → sales. 
+You discover that small Mittelstand companies spend hours extracting information from PDFs. You build a highly-efficient, tiny document-analysis tool using quantized local models (Qwen 8B / DeepSeek 14B) and a "deterministic-first" architecture. It attempts text extraction and Python calculations first, falling back to a Vision model only if the PDF is an image.
+- **Trains:** Python → APIs → LLMs (tool calls/structured output) → VLM fallbacks → databases → authentication → UI → deployment → pricing → customer discovery → sales. 
 *One project can therefore train 60% of your desired skill set.*
 
 ### 2. Internal knowledge-base RAG assistant

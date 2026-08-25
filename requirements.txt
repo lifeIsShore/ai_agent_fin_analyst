@@ -1,0 +1,9 @@
+pymupdf
+pdf2image
+openpyxl
+pandas
+ollama
+pydantic
+reportlab
+pillow
+yfinance
