@@ -27,7 +27,7 @@ def calculate_wacc(market_data: dict) -> float:
     wacc = (weight_equity * cost_of_equity) + (weight_debt * after_tax_cod)
     return wacc
 
-def project_financials(historical: CompanyFinancials, wacc: float, market_data: dict):
+def project_financials(historical: CompanyFinancials, wacc: float, market_data: dict, dynamic_scenarios=None):
     """
     Projects financials 5 years into the future using Base, Bull, and Bear scenarios.
     Returns a dictionary of projections and valuation metrics.
@@ -35,9 +35,12 @@ def project_financials(historical: CompanyFinancials, wacc: float, market_data: 
     # Historical base year metrics (assumed clean from LLM extraction)
     # Applying generic scale fix if values look too small compared to market cap.
     scale = 1.0
-    if market_data['market_cap'] > 0 and historical.income_statement.revenue > 0:
-        if market_data['market_cap'] / historical.income_statement.revenue > 1000:
+    if market_data.get('market_cap', 0) > 0 and historical.income_statement.revenue > 0:
+        ratio = market_data['market_cap'] / historical.income_statement.revenue
+        if ratio > 100000:
             scale = 1000000.0 # Revenue was likely reported in millions
+        elif ratio > 100:
+            scale = 1000.0 # Revenue was likely reported in thousands
             
     base_rev = historical.income_statement.revenue * scale
     base_ebit = historical.income_statement.ebit * scale
@@ -52,11 +55,18 @@ def project_financials(historical: CompanyFinancials, wacc: float, market_data: 
     tax_rate = 0.25
     
     # Scenarios (Revenue Growth rates)
-    scenarios = {
-        "Bear": 0.02,
-        "Base": 0.05,
-        "Bull": 0.08
-    }
+    if dynamic_scenarios:
+        scenarios = {
+            "Bear": dynamic_scenarios.bear.revenue_growth,
+            "Base": dynamic_scenarios.base.revenue_growth,
+            "Bull": dynamic_scenarios.bull.revenue_growth
+        }
+    else:
+        scenarios = {
+            "Bear": 0.02,
+            "Base": 0.05,
+            "Bull": 0.08
+        }
     
     results = {}
     

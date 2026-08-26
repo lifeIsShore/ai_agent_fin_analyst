@@ -32,3 +32,12 @@ class CompanyFinancials(BaseModel):
     balance_sheet: BalanceSheet
     cash_flow: CashFlowStatement
     management_assumptions: str = Field(description="Any forward-looking commentary on expected growth, margins, or capex.")
+
+class ScenarioBase(BaseModel):
+    revenue_growth: float = Field(description="Projected annual revenue growth rate (e.g., 0.05 for 5%).")
+
+class DynamicScenarios(BaseModel):
+    bear: ScenarioBase = Field(description="The pessimistic bear case.")
+    base: ScenarioBase = Field(description="The expected base case.")
+    bull: ScenarioBase = Field(description="The optimistic bull case.")
+    insight_summary: str = Field(description="A brief explanation of why these growth rates were chosen based on MD&A and historical trends.")
