@@ -5,6 +5,7 @@ from pre_processor import isolate_financial_pages
 from llm_extractor_dcf import extract_financials_with_llm, generate_dynamic_scenarios
 from market_data import get_market_data
 from dcf_engine import calculate_wacc, project_financials
+from dcf_excel_exporter import export_dcf_to_excel
 
 def run_batch_pipeline(folder_path: str, ticker: str):
     print(f"\n--- Starting BATCH DCF Pipeline for {ticker} ---")
@@ -69,6 +70,9 @@ def run_batch_pipeline(folder_path: str, ticker: str):
         print(f"  Target Price (Perpetuity Growth): €{data['implied_price_pg']:,.2f}")
         print(f"  Target Price (Exit Multiple):     €{data['implied_price_mult']:,.2f}")
     print("-------------------------")
+    
+    # Export to Excel
+    export_dcf_to_excel(historical_data_list, dynamic_scenarios, market_data, wacc, scale, results, "batch_dcf_output.xlsx")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Batch DCF Agent Pipeline")
