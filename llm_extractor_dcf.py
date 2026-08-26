@@ -2,39 +2,45 @@ import ollama
 from models_dcf import CompanyFinancials, DynamicScenarios
 import json
 
-def extract_financials_with_llm(text: str) -> CompanyFinancials:
+import fitz
+
+def extract_mda_with_llm(filepath: str) -> str:
     """
-    Uses Qwen2.5 to parse the 3 financial statements into a strict Pydantic JSON schema.
-    Applies edge case rules for restatements and scale.
+    Extracts the Management Discussion & Analysis (MD&A) forward-looking 
+    statements using the LLM from the first 20 pages of the report.
     """
-    prompt = f"""
-    You are an expert financial data extractor. Extract the historical financial data from the provided text for the most recent year.
-    Return ONLY valid JSON matching the exact schema provided. Do not add any conversational text.
-    
-    CRITICAL RULES:
-    1. If multiple values exist for the same metric across different years, ALWAYS extract the value for the most recent year only.
-    2. Ensure negative numbers (often in parentheses like (500)) are extracted as negative floats (-500.0).
-    3. BEWARE OF EUROPEAN FORMATTING: If a number is written as "1.500,00", it means 1500.00. Periods are thousands separators, commas are decimals. Always return a standard Python float.
-    
-    TEXT TO PARSE:
-    {text}
-    """
-    
     try:
-        print("Sending to LLM for extraction (this may take 20-40 seconds)...")
+        doc = fitz.open(filepath)
+        mda_text = ""
+        # Grab first 20 pages (usually contains letter to shareholders and management report)
+        for i in range(min(20, len(doc))):
+            mda_text += doc[i].get_text("text") + "\n"
+        doc.close()
+        
+        # Truncate to save context window if it's too massive
+        mda_text = mda_text[:12000]
+        
+        prompt = f"""
+        You are a financial analyst. Read the following excerpts from the beginning of an Annual Report.
+        Extract any forward-looking management assumptions regarding future revenue growth, margins, order backlog, or market conditions.
+        Return a single paragraph summarizing their outlook. If none is found, return "No forward-looking assumptions provided."
+        
+        TEXT:
+        {mda_text}
+        """
+        
+        print(f"  -> [LLM] Extracting MD&A insights from {filepath}...")
         response = ollama.chat(
             model='qwen2.5',
             messages=[{'role': 'user', 'content': prompt}],
-            format=CompanyFinancials.model_json_schema(),
-            options={'temperature': 0.0} # Deterministic
+            options={'temperature': 0.1}
         )
         
-        result_json = response['message']['content']
-        return CompanyFinancials.model_validate_json(result_json)
+        return response['message']['content'].strip()
         
     except Exception as e:
-        print(f"Error extracting financials with LLM: {e}")
-        return None
+        print(f"Error extracting MD&A with LLM: {e}")
+        return "Error extracting assumptions."
 
 def generate_dynamic_scenarios(historical_data: list[CompanyFinancials]) -> DynamicScenarios:
     """

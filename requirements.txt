@@ -7,3 +7,4 @@ pydantic
 reportlab
 pillow
 yfinance
+pdfplumber

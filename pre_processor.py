@@ -1,69 +1,107 @@
 import fitz
 import re
+import ollama
+import json
 
-def isolate_financial_pages(filepath: str, top_n: int = 5) -> str:
+def get_large_text(page):
+    """Extracts text blocks that are likely section headers based on font size."""
+    headers = []
+    blocks = page.get_text("dict")["blocks"]
+    for b in blocks:
+        if "lines" in b:
+            for l in b["lines"]:
+                for s in l["spans"]:
+                    # Typical body text is 9-12pt. Headers are usually > 13pt.
+                    if s["size"] >= 13.0 and len(s["text"].strip()) > 5:
+                        headers.append(s["text"].strip())
+    return headers
+
+def locate_statement_pages(filepath: str) -> dict:
     """
-    Scans a massive PDF and isolates the pages with the highest density of numbers.
-    Financial statements (Income, Balance Sheet, Cash Flow) mathematically have the highest
-    concentration of digits in any Annual Report, bypassing the need for language-specific keywords.
+    Returns a dictionary of page numbers:
+    {'income_statement': X, 'balance_sheet': Y, 'cash_flow': Z}
+    Uses Regex fast-path, falls back to LLM title-search.
     """
     try:
         doc = fitz.open(filepath)
     except Exception as e:
         print(f"Error opening PDF {filepath}: {e}")
-        return ""
+        return {}
 
-    page_scores = []
+    found_pages = {}
     
+    # Regex Fast Path
+    print("  -> [Pre-Processor] Attempting Regex Fast Path...")
     for page_num in range(len(doc)):
-        page = doc[page_num]
-        text = page.get_text("text")
+        text = doc[page_num].get_text("text").lower()
         
-        # Count all numeric digits on the page
-        digit_count = len(re.findall(r'\d', text))
-        
-        # Optional: Boost score slightly if standard English/German keywords are found
-        boost = 0
-        text_lower = text.lower()
-        
-        # English terms
-        if "assets" in text_lower and "liabilities" in text_lower: boost += 100
-        if "revenue" in text_lower and "profit" in text_lower: boost += 100
-        if "cash flows" in text_lower: boost += 100
-        
-        # German/European terms
-        if "bilanz" in text_lower or "aktiva" in text_lower or "passiva" in text_lower: boost += 100
-        if "gewinn- und verlustrechnung" in text_lower or "umsatzerlöse" in text_lower: boost += 100
-        if "kapitalflussrechnung" in text_lower: boost += 100
-            
-        final_score = digit_count + boost
-        
-        page_scores.append({
-            "page_num": page_num,
-            "score": final_score,
-            "text": text
-        })
-            
+        if "statement of profit or loss" in text or "gewinn- und verlustrechnung" in text:
+            if "income_statement" not in found_pages:
+                found_pages["income_statement"] = page_num
+                
+        if "statement of financial position" in text or "balance sheet" in text or "bilanz" in text:
+            if "balance_sheet" not in found_pages:
+                found_pages["balance_sheet"] = page_num
+                
+        if "statement of cash flows" in text or "kapitalflussrechnung" in text:
+            if "cash_flow" not in found_pages:
+                found_pages["cash_flow"] = page_num
+
+        if len(found_pages) == 3:
+            print("  -> [Pre-Processor] Regex Fast Path SUCCESS!")
+            doc.close()
+            return found_pages
+
+    # Fallback Path: Extract Semantic Titles
+    print("  -> [Pre-Processor] Regex failed to find all 3. Falling back to Semantic Title Extraction...")
+    toc_lines = []
+    for page_num in range(min(100, len(doc))): # Search first 100 pages to save time
+        headers = get_large_text(doc[page_num])
+        if headers:
+            combined_header = " | ".join(headers)
+            # Filter out numbers/noise
+            if len(re.sub(r'\d', '', combined_header)) > 10:
+                toc_lines.append(f"Page {page_num}: {combined_header}")
+
     doc.close()
     
-    # Sort pages by our density score in descending order
-    page_scores.sort(key=lambda x: x["score"], reverse=True)
-    
-    # Dynamic threshold: Grab all pages that score significantly above average,
-    # or just have a high absolute number of digits (>150), capped at 15 pages to protect context window.
-    top_pages = [p for p in page_scores if p["score"] > 150][:15]
-    
-    # Fallback if no pages meet the threshold
-    if not top_pages:
-        top_pages = page_scores[:top_n]
-        
-    # Sort them back in chronological order just in case the LLM cares about flow
-    top_pages.sort(key=lambda x: x["page_num"])
-    
-    relevant_text = []
-    print(f"Isolated the {top_n} most data-dense pages:")
-    for p in top_pages:
-        print(f"  -> Page {p['page_num'] + 1} (Score: {p['score']})")
-        relevant_text.append(p['text'])
+    if not toc_lines:
+        print("  -> [Pre-Processor] Fallback failed (no titles found).")
+        return found_pages
 
-    return "\n\n--- NEXT DATA PAGE ---\n\n".join(relevant_text)
+    toc_text = "\n".join(toc_lines)
+    
+    prompt = f"""
+    You are an expert financial analyst. Below is a list of section headers and their page numbers extracted from an annual report.
+    Identify the page numbers for the Income Statement (Profit or Loss), the Balance Sheet (Financial Position), and the Cash Flow Statement.
+    
+    TITLES:
+    {toc_text}
+    
+    Return a valid JSON object with the exact keys: "income_statement", "balance_sheet", "cash_flow". The values must be integers (the page number).
+    If you cannot find one, set its value to -1.
+    """
+    
+    schema = {
+        "type": "object",
+        "properties": {
+            "income_statement": {"type": "integer"},
+            "balance_sheet": {"type": "integer"},
+            "cash_flow": {"type": "integer"}
+        },
+        "required": ["income_statement", "balance_sheet", "cash_flow"]
+    }
+    
+    try:
+        response = ollama.chat(
+            model='qwen2.5',
+            messages=[{'role': 'user', 'content': prompt}],
+            format=schema,
+            options={'temperature': 0.0}
+        )
+        result = json.loads(response['message']['content'])
+        print(f"  -> [Pre-Processor] LLM Fallback SUCCESS: {result}")
+        return result
+    except Exception as e:
+        print(f"  -> [Pre-Processor] LLM Fallback failed: {e}")
+        return found_pages

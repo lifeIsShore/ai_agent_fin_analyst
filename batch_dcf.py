@@ -1,14 +1,22 @@
 import argparse
 import os
 import glob
-from pre_processor import isolate_financial_pages
-from llm_extractor_dcf import extract_financials_with_llm, generate_dynamic_scenarios
+import re
+from pre_processor import locate_statement_pages
+from table_extractor import extract_financial_data
+from llm_extractor_dcf import extract_mda_with_llm, generate_dynamic_scenarios
 from market_data import get_market_data
 from dcf_engine import calculate_wacc, project_financials
 from dcf_excel_exporter import export_dcf_to_excel
 
+def extract_year_from_filename(filename: str) -> int:
+    match = re.search(r'(20\d{2})', filename)
+    if match:
+        return int(match.group(1))
+    return 2025 # Fallback
+
 def run_batch_pipeline(folder_path: str, ticker: str):
-    print(f"\n--- Starting BATCH DCF Pipeline for {ticker} ---")
+    print(f"\n--- Starting DETERMINISTIC BATCH DCF Pipeline for {ticker} ---")
     print(f"Folder: {folder_path}")
     
     pdf_files = glob.glob(os.path.join(folder_path, "*.pdf"))
@@ -20,19 +28,28 @@ def run_batch_pipeline(folder_path: str, ticker: str):
     historical_data_list = []
     
     for pdf_path in pdf_files:
-        print(f"\n[Processing {os.path.basename(pdf_path)}]")
-        financial_text = isolate_financial_pages(pdf_path)
-        if not financial_text:
-            print("  -> Failed to isolate text.")
+        filename = os.path.basename(pdf_path)
+        year = extract_year_from_filename(filename)
+        print(f"\n[Processing {filename} (Year: {year})]")
+        
+        # 1. Locate Pages (Hybrid Regex/LLM)
+        page_map = locate_statement_pages(pdf_path)
+        if not page_map:
+            print("  -> Failed to locate financial statements.")
             continue
             
-        print("  -> Running LLM Extraction...")
-        data = extract_financials_with_llm(financial_text)
-        if data:
-            historical_data_list.append(data)
-            print(f"  -> Extracted Year {data.year} (Revenue: {data.income_statement.revenue})")
-        else:
-            print("  -> LLM Extraction failed for this file.")
+        print(f"  -> Found pages: {page_map}")
+        
+        # 2. Deterministic Extraction (Python)
+        print("  -> Running Python Table Extraction...")
+        data = extract_financial_data(pdf_path, page_map, year)
+        
+        # 3. MD&A Extraction (LLM)
+        mda = extract_mda_with_llm(pdf_path)
+        data.management_assumptions = mda
+        
+        historical_data_list.append(data)
+        print(f"  -> Extracted Year {data.year} (Revenue: {data.income_statement.revenue})")
             
     if not historical_data_list:
         print("No historical data could be extracted.")
@@ -41,7 +58,7 @@ def run_batch_pipeline(folder_path: str, ticker: str):
     # Sort chronologically
     historical_data_list.sort(key=lambda x: x.year)
     
-    # 2. Dynamic Insight Generation
+    # 4. Dynamic Insight Generation
     print("\n[Generating Dynamic Scenarios based on History & MD&A]")
     dynamic_scenarios = generate_dynamic_scenarios(historical_data_list)
     print(f"Dynamic Scenarios Insight:\n{dynamic_scenarios.insight_summary}\n")
@@ -49,14 +66,11 @@ def run_batch_pipeline(folder_path: str, ticker: str):
     print(f"  Base: {dynamic_scenarios.base.revenue_growth:.1%}")
     print(f"  Bull: {dynamic_scenarios.bull.revenue_growth:.1%}")
     
-    # 3. Use most recent year for DCF Base
+    # 5. DCF Math Engine
     most_recent_data = historical_data_list[-1]
-    
-    # 4. Pull Market Data
     print("\n[Pulling live market data...]")
     market_data = get_market_data(ticker)
     
-    # 5. DCF Engine
     print("\n[Running Dynamic DCF Math Engine...]")
     wacc = calculate_wacc(market_data)
     print(f"Calculated WACC: {wacc:.2%}")
@@ -71,11 +85,11 @@ def run_batch_pipeline(folder_path: str, ticker: str):
         print(f"  Target Price (Exit Multiple):     €{data['implied_price_mult']:,.2f}")
     print("-------------------------")
     
-    # Export to Excel
+    # 6. Export to Excel
     export_dcf_to_excel(historical_data_list, dynamic_scenarios, market_data, wacc, scale, results, "batch_dcf_output.xlsx")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Batch DCF Agent Pipeline")
+    parser = argparse.ArgumentParser(description="Deterministic Batch DCF Agent Pipeline")
     parser.add_argument("folder_path", help="Path to the folder containing Annual Report PDFs")
     parser.add_argument("ticker", help="Yahoo Finance Ticker (e.g. AAPL, VH2.DE)")
     
