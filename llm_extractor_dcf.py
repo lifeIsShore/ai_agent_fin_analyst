@@ -4,6 +4,43 @@ import json
 
 import fitz
 
+def fallback_extract_with_llm(text: str, year: int) -> CompanyFinancials:
+    """
+    Sniper LLM Fallback: Used when the deterministic Python regex fails.
+    Takes ONLY the exact text of the 3 financial statement pages and extracts the data.
+    """
+    prompt = f"""
+    You are an expert financial data extractor. I am providing you with the exact raw text from 3 pages of an annual report containing the Income Statement, Balance Sheet, and Cash Flow Statement.
+    Extract the financial data for the most recent year (which is usually the first column of numbers).
+    
+    CRITICAL RULES:
+    1. If a number is negative (e.g. in parentheses like (500)), extract it as -500.0.
+    2. LOOK AT THE TABLE HEADERS. If it says 'in kEUR', 'in TEUR', or 'in thousands', you MUST multiply every single number by 1000 before returning it. 
+       If it says 'in millions', multiply by 1,000,000.
+       If it is in absolute units, do not multiply.
+    3. Return ONLY valid JSON matching the schema provided.
+    
+    TEXT:
+    {text}
+    """
+    
+    print(f"    -> [Sniper LLM] Regex failed. Triggering LLM fallback extraction for Year {year}...")
+    try:
+        response = ollama.chat(
+            model='qwen2.5',
+            messages=[{'role': 'user', 'content': prompt}],
+            format=CompanyFinancials.model_json_schema(),
+            options={'temperature': 0.0}
+        )
+        
+        result_json = response['message']['content']
+        data = CompanyFinancials.model_validate_json(result_json)
+        data.year = year
+        return data
+    except Exception as e:
+        print(f"    -> [Sniper LLM] Failed: {e}")
+        return None
+
 def extract_mda_with_llm(filepath: str) -> str:
     """
     Extracts the Management Discussion & Analysis (MD&A) forward-looking 
@@ -54,24 +91,29 @@ def generate_dynamic_scenarios(historical_data: list[CompanyFinancials]) -> Dyna
         
     # Build historical context
     context = "Historical Revenue Trend:\n"
-    for data in historical_data:
+    hist_summary = []
+    for i, data in enumerate(historical_data):
         context += f"Year {data.year}: {data.income_statement.revenue}\n"
         
-    # Aggregate MD&A
-    mda_context = "Management Assumptions (MD&A):\n"
-    for data in historical_data[-2:]: # Use last 2 years for most relevant commentary
-        mda_context += f"Year {data.year}: {data.management_assumptions}\n"
+        # Only include heavy MD&A text for the last 2 years to save RAM/Context
+        mda_snippet = data.management_assumptions if i >= len(historical_data) - 2 else "Archived."
+        
+        hist_summary.append({
+            "year": data.year,
+            "revenue": data.income_statement.revenue,
+            "management_assumptions": mda_snippet
+        })
         
     prompt = f"""
-    You are an expert financial analyst. Based on the historical revenue data and management's forward-looking assumptions provided below, project the annual revenue growth rate for the next 5 years in three scenarios: Bear, Base, and Bull.
+    You are an expert financial analyst. Analyze the following historical revenue data and management MD&A text.
+    Your task is to generate realistic revenue growth rates for a Bear, Base, and Bull scenario for the next 5 years.
     
-    {context}
+    Additionally, analyze the tone of the management's text and provide a 'management_confidence_score' from 1 to 10 (1 = extremely pessimistic/distressed, 10 = extremely confident/booming) and a short 1-sentence 'confidence_rationale'.
     
-    {mda_context}
+    Return ONLY a valid JSON object matching the requested schema.
     
-    Provide your growth rate projections as floats (e.g., 0.05 for 5% growth).
-    Also provide a brief insight_summary explaining your reasoning.
-    Return ONLY valid JSON matching the exact schema provided. Do not add conversational text.
+    HISTORICAL DATA & MANAGEMENT TEXT:
+    {json.dumps(hist_summary, indent=2)}
     """
     
     try:

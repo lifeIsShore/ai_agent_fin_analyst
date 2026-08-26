@@ -87,6 +87,31 @@ def run_batch_pipeline(folder_path: str, ticker: str):
     
     # 6. Export to Excel
     export_dcf_to_excel(historical_data_list, dynamic_scenarios, market_data, wacc, scale, results, "batch_dcf_output.xlsx")
+    
+    # 7. Save to SQLite DB
+    print("\n[Saving qualitative insights and target prices to SQLite Database...]")
+    import sqlite3
+    conn = sqlite3.connect('valuations.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS valuations
+                 (ticker text, date text, wacc real, 
+                  bear_target real, base_target real, bull_target real,
+                  confidence_score integer, rationale text)''')
+                  
+    import datetime
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    
+    c.execute("INSERT INTO valuations VALUES (?,?,?,?,?,?,?,?)", 
+              (ticker, today, wacc, 
+               results['Bear']['implied_price_pg'], 
+               results['Base']['implied_price_pg'], 
+               results['Bull']['implied_price_pg'],
+               dynamic_scenarios.management_confidence_score, 
+               dynamic_scenarios.confidence_rationale))
+               
+    conn.commit()
+    conn.close()
+    print("  -> Saved successfully to valuations.db!")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Deterministic Batch DCF Agent Pipeline")

@@ -84,5 +84,21 @@ def export_dcf_to_excel(
     for i in range(2, len(headers) + 1):
         ws_hist.column_dimensions[openpyxl.utils.get_column_letter(i)].width = 15
 
+    # --- Sheet 3: Qualitative Insights ---
+    ws_qual = wb.create_sheet("Qualitative Insights")
+    ws_qual.cell(row=1, column=1, value="AI Qualitative Management Analysis").font = Font(bold=True, size=14)
+    
+    ws_qual.cell(row=3, column=1, value="Management Confidence Score (1-10):").font = Font(bold=True)
+    ws_qual.cell(row=3, column=2, value=dynamic_scenarios.management_confidence_score).font = Font(bold=True, color="FF0000" if dynamic_scenarios.management_confidence_score < 5 else "00B050")
+    
+    ws_qual.cell(row=4, column=1, value="Confidence Rationale:").font = Font(bold=True)
+    ws_qual.cell(row=4, column=2, value=dynamic_scenarios.confidence_rationale)
+    
+    ws_qual.cell(row=6, column=1, value="Overall Insight Summary:").font = Font(bold=True)
+    ws_qual.cell(row=6, column=2, value=dynamic_scenarios.insight_summary)
+    
+    ws_qual.column_dimensions['A'].width = 35
+    ws_qual.column_dimensions['B'].width = 80
+
     wb.save(output_filepath)
     print(f"Valuation results exported to {output_filepath}")

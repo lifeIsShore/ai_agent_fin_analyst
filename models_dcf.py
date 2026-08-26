@@ -37,7 +37,9 @@ class ScenarioBase(BaseModel):
     revenue_growth: float = Field(description="Projected annual revenue growth rate (e.g., 0.05 for 5%).")
 
 class DynamicScenarios(BaseModel):
-    bear: ScenarioBase = Field(description="The pessimistic bear case.")
-    base: ScenarioBase = Field(description="The expected base case.")
-    bull: ScenarioBase = Field(description="The optimistic bull case.")
-    insight_summary: str = Field(description="A brief explanation of why these growth rates were chosen based on MD&A and historical trends.")
+    bear: ScenarioBase = Field(description="Bear case scenario assumptions")
+    base: ScenarioBase = Field(description="Base case scenario assumptions")
+    bull: ScenarioBase = Field(description="Bull case scenario assumptions")
+    insight_summary: str = Field(description="A brief paragraph explaining the rationale behind the selected growth rates based on historical data and management commentary.")
+    management_confidence_score: int = Field(description="A score from 1 to 10 evaluating the overall optimism and confidence of management based on the MD&A text. 1 is extremely pessimistic/struggling, 10 is extremely optimistic/booming.")
+    confidence_rationale: str = Field(description="A short 1-sentence explanation of why that specific management confidence score was given.")
