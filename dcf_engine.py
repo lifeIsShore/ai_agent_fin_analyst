@@ -116,6 +116,10 @@ def project_financials(historical: CompanyFinancials, wacc: float, market_data: 
         
         results[scenario_name] = {
             "rev_growth": growth_rate,
+            "projected_rev": projected_rev,
+            "projected_ebit": projected_ebit,
+            "projected_da": projected_da,
+            "projected_capex": projected_capex,
             "projected_ufcf": ufcf,
             "tv_pg": tv_pg,
             "implied_price_pg": price_pg,

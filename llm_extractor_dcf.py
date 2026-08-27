@@ -14,11 +14,12 @@ def fallback_extract_with_llm(text: str, year: int) -> CompanyFinancials:
     Extract the financial data for the most recent year (which is usually the first column of numbers).
     
     CRITICAL RULES:
-    1. If a number is negative (e.g. in parentheses like (500)), extract it as -500.0.
-    2. LOOK AT THE TABLE HEADERS. If it says 'in kEUR', 'in TEUR', or 'in thousands', you MUST multiply every single number by 1000 before returning it. 
+    1. Revenue and Total Assets MUST ALWAYS be positive numbers. Never return negative revenue. If you see a dash before revenue, it is just formatting.
+    2. If a number is negative (e.g. in parentheses like (500) or -500), extract it as -500.0 (except for Revenue and Assets).
+    3. LOOK AT THE TABLE HEADERS. If it says 'in kEUR', 'in TEUR', or 'in thousands', you MUST multiply every single number by 1000 before returning it. 
        If it says 'in millions', multiply by 1,000,000.
        If it is in absolute units, do not multiply.
-    3. Return ONLY valid JSON matching the schema provided.
+    4. Return ONLY valid JSON matching the schema provided.
     
     TEXT:
     {text}
@@ -107,6 +108,7 @@ def generate_dynamic_scenarios(historical_data: list[CompanyFinancials]) -> Dyna
     prompt = f"""
     You are an expert financial analyst. Analyze the following historical revenue data and management MD&A text.
     Your task is to generate realistic revenue growth rates for a Bear, Base, and Bull scenario for the next 5 years.
+    MUST FORMAT AS DECIMALS: 5% must be written as 0.05. -10% must be written as -0.10. Do not use whole numbers.
     
     Additionally, analyze the tone of the management's text and provide a 'management_confidence_score' from 1 to 10 (1 = extremely pessimistic/distressed, 10 = extremely confident/booming) and a short 1-sentence 'confidence_rationale'.
     
@@ -135,5 +137,7 @@ def generate_dynamic_scenarios(historical_data: list[CompanyFinancials]) -> Dyna
             bear={"revenue_growth": 0.02},
             base={"revenue_growth": 0.05},
             bull={"revenue_growth": 0.08},
-            insight_summary="Fallback to static rates due to error."
+            insight_summary="Fallback to static rates due to error.",
+            management_confidence_score=5,
+            confidence_rationale="Failed to parse LLM insight."
         )

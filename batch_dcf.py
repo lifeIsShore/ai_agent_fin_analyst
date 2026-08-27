@@ -93,21 +93,35 @@ def run_batch_pipeline(folder_path: str, ticker: str):
     import sqlite3
     conn = sqlite3.connect('valuations.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS valuations
+    c.execute('''CREATE TABLE IF NOT EXISTS valuations_v2
                  (ticker text, date text, wacc real, 
                   bear_target real, base_target real, bull_target real,
-                  confidence_score integer, rationale text)''')
+                  confidence_score integer, rationale text,
+                  latest_ebit_margin real, latest_net_margin real,
+                  latest_capex_to_rev real, latest_roa real,
+                  proj_y1_rev real, proj_y1_ufcf real)''')
                   
     import datetime
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     
-    c.execute("INSERT INTO valuations VALUES (?,?,?,?,?,?,?,?)", 
+    # Calculate KPIs for most recent year
+    rev = most_recent_data.income_statement.revenue
+    ebit_margin = most_recent_data.income_statement.ebit / rev if rev else 0
+    net_margin = most_recent_data.income_statement.net_income / rev if rev else 0
+    capex_rev = most_recent_data.cash_flow.capex / rev if rev else 0
+    assets = most_recent_data.balance_sheet.total_assets
+    roa = most_recent_data.income_statement.net_income / assets if assets else 0
+    
+    c.execute("INSERT INTO valuations_v2 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
               (ticker, today, wacc, 
                results['Bear']['implied_price_pg'], 
                results['Base']['implied_price_pg'], 
                results['Bull']['implied_price_pg'],
                dynamic_scenarios.management_confidence_score, 
-               dynamic_scenarios.confidence_rationale))
+               dynamic_scenarios.confidence_rationale,
+               ebit_margin, net_margin, capex_rev, roa,
+               results['Base']['projected_rev'][0],
+               results['Base']['projected_ufcf'][0]))
                
     conn.commit()
     conn.close()

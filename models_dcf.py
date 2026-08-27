@@ -34,7 +34,7 @@ class CompanyFinancials(BaseModel):
     management_assumptions: str = Field(description="Any forward-looking commentary on expected growth, margins, or capex.")
 
 class ScenarioBase(BaseModel):
-    revenue_growth: float = Field(description="Projected annual revenue growth rate (e.g., 0.05 for 5%).")
+    revenue_growth: float = Field(description="Projected annual revenue growth rate (e.g., 0.05 for 5%). Must be between -1.0 and 5.0.", ge=-1.0, le=5.0)
 
 class DynamicScenarios(BaseModel):
     bear: ScenarioBase = Field(description="Bear case scenario assumptions")

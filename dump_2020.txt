@@ -1,0 +1,217 @@
+
+--- BALANCE_SHEET (Page 1) ---
+Friedrich Vorwerk in figures
+Page 2
+Friedrich Vorwerk in figures
+Business year 2020 2019 Δ2020
+/2019
+€k €k %
+Order backlog 306,508 285,775 7.3
+Order intake 312,524 290,703 7.5
+Earnings figures (adjusted*) €k €k %
+Revenue 291,228 179,331 62.4
+Operating performance 291,236 179,887 61.9
+Total performance 305,358 185,582 64.5
+Cost of materials -128,275 -82,476 55.5
+Staff costs -89,446 -51,591 73.4
+EBITDA 58,570 36,664 59.8
+EBITDA margin 20.1% 20.4%
+EBIT 47,394 28,933 63.8
+EBIT margin 16.3% 16.1%
+EBT 42,651 28,199 51.3
+EBT margin 14.6% 15.7%
+Consolidated net profit 30,521 23,417 30.3
+Earnings figures (IFRS) €k €k %
+EBITDA 58,822 41,807 40.7
+EBIT 47,468 33,831 40.3
+Consolidated net profit 30,559 28,385 7.7
+Figures from the statement of financial position (IFRS) 31/12 31/12
+€k €k %
+Non-current assets 72,009 61,270 17.5
+Current assets 104,903 106,197 -1.2
+thereof cash and equivalents 45,254 52,361 -13.6
+Issued capital 3,120 2,000 56.0
+Other equity 60,484 35,880 68.6
+Total equity 63,604 37,880 67.9
+Equity ratio 36.0% 22.6%
+Non-current liabilities 42,793 37,295 14.7
+Current liabilities 70,515 92,291 -23.6
+Total assets 176,912 167,466 5.6
+Net debt
+(net debt (-)/net cash (+)) 27,851 31,828 -12.5
+Employees 1,304 1,239 5.2
+* For details of adjustments please see the information on financial position and financial performance in the interim Group management
+report.
+Contents
+Page 3
+Contents
+Friedrich Vorwerk in figures 2
+Contents 3
+Report of the Supervisory Board 4
+Combined Management Report and Group Management Report 6
+Financial position and financial performance 10
+Sustainability Accounting Standards Board (SASB) Index 19
+Disclosures in accordance with section 312(3) AktG 21
+Report on expected developments 21
+Events after the end of the reporting period 21
+IFRS Consolidated Financial Statements for 2020 22
+IFRS consolidated statement of comprehensive income 23
+IFRS consolidated statement of financial position 24
+IFRS consolidated statement of financial position 24
+IFRS consolidated statement of cash flows 26
+IFRS statement of changes in consolidated equity 27
+Notes to the Consolidated Financial Statements for 2020 28
+I. Methods and principles 28
+II. Notes to the consolidated statement of financial position 42
+III. Notes to the statement of profit and loss 53
+IV. Segment reporting 57
+V. Notes to the consolidated statement of cash flows 60
+VI. Additional disclosures on financial instruments 61
+VII. Objectives and methods of financial risk management 61
+VIII. Other required information 63
+Independent auditor’s report 68
+Assurance of the legal representatives 73
+Contact 74
+Legal notice 74
+
+--- CASH_FLOW (Page 2) ---
+Contents
+Page 3
+Contents
+Friedrich Vorwerk in figures 2
+Contents 3
+Report of the Supervisory Board 4
+Combined Management Report and Group Management Report 6
+Financial position and financial performance 10
+Sustainability Accounting Standards Board (SASB) Index 19
+Disclosures in accordance with section 312(3) AktG 21
+Report on expected developments 21
+Events after the end of the reporting period 21
+IFRS Consolidated Financial Statements for 2020 22
+IFRS consolidated statement of comprehensive income 23
+IFRS consolidated statement of financial position 24
+IFRS consolidated statement of financial position 24
+IFRS consolidated statement of cash flows 26
+IFRS statement of changes in consolidated equity 27
+Notes to the Consolidated Financial Statements for 2020 28
+I. Methods and principles 28
+II. Notes to the consolidated statement of financial position 42
+III. Notes to the statement of profit and loss 53
+IV. Segment reporting 57
+V. Notes to the consolidated statement of cash flows 60
+VI. Additional disclosures on financial instruments 61
+VII. Objectives and methods of financial risk management 61
+VIII. Other required information 63
+Independent auditor’s report 68
+Assurance of the legal representatives 73
+Contact 74
+Legal notice 74
+Report of the Supervisory Board
+Page 4
+Report of the Supervisory Board
+In the year under review, the Supervisory Board ensured that it was continuously informed about the business and
+strategic development of the company and advised and monitored the Management Board in accordance with the tasks
+and responsibilities required of it by law, the Articles of Association. This meant that the Supervisory Board was informed
+about the strategy, business policy and planning, the risk situation and the net assets, financial position and results of
+operations of the Vorwerk Group at all times.
+This was achieved by personal talks between the Chairman of the Supervisory Board and the Management Board on the
+course of business and regular meetings of the Supervisory Board, which were all held as video conferences on account
+of the COVID-19 pandemic. All members of the Supervisory Board and, if necessary, the members of the Management
+Board of the company took part in these video conferences.
+Main issues discussed and resolutions of the Supervisory Board
+At the individual meetings, the Supervisory Board analysed the company’s current business development together with
+the Management Board and discussed its strategic focus. The topics discussed included the economic situation of the
+company and the individual subsidiaries. To the extent that individual transactions required the approval of the Supervi-
+sory Board in accordance with the Articles of Association or the law, the Supervisory Board examined these transactions
+and resolved whether to grant its approval. The Supervisory Board’s discussions also extended to the effects of the
+COVID-19 pandemic. The Supervisory Board and the Management Board maintained constant contact in the 2020 finan-
+cial year to ensure the best possible organisation of the measures taken to protect the health of the employees of the
+Vorwerk Group as their top priority, and also to minimise the economic impact of the financial position and financial
+performance of the Group. Furthermore, at all times the Supervisory Board was very closely involved in the preparations
+underway from the start of the fourth quarter of 2020 for a possible IPO of the company. The Supervisory Board has
+examined the plans at length and considers such a step to be a suitable means for supporting the positioning of the
+Vorwerk Group as a leading company in the energy revolution in Europe.
+The Annual General Meeting on 6 July 2020 of Youco M19-H-99 dual Vorrats-SE, now renamed to Friedrich Vorwerk
+Group SE, appointed Mr Klaus Seidel, Mr Gert-Maria Freimuth and Mr Anton Breitkopf as members of the Supervisory
+Board. They have been appointed until the end of the Annual General Meeting that will adopt a resolution on official
+approval of their actions for the fifth financial year after the start of their term in office. This does not include the
+financial year in which their term in office begins. In any event, their term in office will end after six years. The appoint-
+ment of the previous members of the Supervisory Board, Ms Angelika Hundt, Mr Simon Fritzsche and Mr Kai Anschütz,
+ended as scheduled with the Annual General Meeting on 6 July 2020. At its first meeting on 6 July 2020, the newly
+appointed Supervisory Board dismissed the previous member of the Management Board, Ms Steffi Brettschneider, ef-
+fective 6 July 2020 and appointed Mr Torben Kleinfeldt as the new member of the Management Board of the company
+with sole power of representation. His appointment lasts until 6 July 2026.
+By way of resolution of the extraordinary general meeting of Youco M19-H-99 dual Vorrats-SE on 14 July 2020, the
+company was renamed Friedrich Vorwerk Group SE, its purpose was changed and its registered office was moved to
+Tostedt.
+By way of resolution of the extraordinary general meeting of Friedrich Vorwerk Group SE on 28 July 2020, in place of the
+previous member of the Supervisory Board, Mr Klaus Seidel, Dr Christof Nesemeier was appointed to the Supervisory
+Board for the remainder of his term in office. At its meeting on 28 July 2020, the Supervisory Board appointed Dr Christof
+Nesemeier as the Chairman of the Supervisory Board and Mr Gert-Maria Freimuth as his deputy.
+The Supervisory Board duly engaged the auditor elected by the Annual General Meeting of 25 September 2020, RSM
+GmbH Wirtschaftsprüfungsgesellschaft Steuerberatungsgesellschaft, Düsseldorf, to audit the annual and consolidated
+financial statements and the Group management report for the 2020 financial year. The auditor confirmed to the Super-
+visory Board that there are no business, financial or other relationships between the auditor, its executive bodies and
+head auditors on the one hand, and the company and the members of its executive bodies on the other, that could give
+rise to doubt as to its independence.
+The Supervisory Board intensively discussed the capital increase against non-cash contributions that was resolved by
+the extraordinary general meeting of the company on 25 September 2020. Furthermore, in its post-formation report of
+12 October 2020, as a precaution in accordance with section 52(3) of the Aktiengesetz (AktG – German Stock Corpora-
+tion Act), the Supervisory Board recommended that the Annual General Meeting approves the contribution agreements
+in conjunction with the performance of the non-cash capital increase resolved on 25 September 2020. The approval of
+the contribution agreements was resolved by the extraordinary general meeting on 13 October 2020.
+At its meeting on 12 November 2020, the Supervisory Board appointed Mr Tim Hameister to the Management Board of
+the company with sole power of representation in charge of Finance and HR (Chief Financial Officer, CFO). His appoint-
+ment lasts until 30 September 2023. The member of the Management Board Mr Torben Kleinfeldt was made the Chief
+Executive Officer (CEO).
+At its meeting on 30 December 2020, the Supervisory Board approved the annual financial statements for the year
+ended 31 December 2019, which were prepared, voluntarily, in accordance with IFRS and audited by RSM GmbH
+
+--- INCOME_STATEMENT (Page 21) ---
+IFRS Consolidated Financial Statements for 2020
+Page 22
+IFRS Consolidated Financial Statements for 2020
+IFRS consolidated statement of profit or loss Note 01/01 - 01/01 -
+31/12/2020 31/12/2019
+€k €k
+Revenue III.1. 291,791 179,331
+Increase (+), (-) in finished goods and work in pro-
+gress 8 557
+Operating performance 291,799 179,887
+Income from initial consolidation 0 5,143
+Income from joint ventures III.2. 10,551 4,185
+Other operating income III.3. 3,571 1,510
+Total performance 305,921 190,725
+Cost of raw materials and supplies -25,213 -13,320
+Cost of purchased services -103,262 -69,157
+Cost of materials III.4. -128,474 -82,476
+Wages and salaries -70,030 -40,531
+Social security and pension costs -19,416 -11,060
+Staff costs III.5. -89,446 -51,591
+Other operating expenses III.6. -29,179 -14,851
+Earnings before interest, taxes, depreciation
+and amortisation (EBITDA) 58,822 41,807
+Depreciation and amortisation II.1. -11,354 -7,976
+Earnings before interest and taxes (EBIT) 47,468 33,831
+Other interest and similar income III.7. 115 119
+Interest and similar expenses III.8. -1,005 -853
+Earnings attributable to non-controlling interests III.8. -3,857 0
+Net finance costs -4,747 -734
+Earnings before taxes (EBT) 42,721 33,097
+Income tax expense III.9. -11,872 -4,539
+Other taxes III.9. -290 -173
+Consolidated net profit 30,559 28,385
+IFRS consolidated statement of comprehensive income
+Page 23
+IFRS consolidated statement of comprehensive income
+IFRS consolidated statement of comprehensive Note 01/01 - 01/01 -
+income 31/12/2020 31/12/2019
+€k €k
+Consolidated net profit 30,559 28,385
+Items that not may subsequently reclassified to
+profit and loss
+Pension reserve II.10.3 -25 -59
+thereof deferred taxes 18 8
+Other comprehensive income after taxes -7 -52
+Comprehensive income for the
+reporting period 30,552 28,333

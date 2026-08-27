@@ -87,25 +87,27 @@ def extract_financial_data(filepath: str, page_map: dict, year: int) -> CompanyF
                     if val == 0: continue
                     
                     if stmt_type == 'income_statement':
-                        if 'revenue' in label or 'umsatzerlöse' in label:
-                            if inc.revenue == 0: inc.revenue = val
+                        if 'revenue' in label or 'umsatz' in label or 'sales' in label or 'turnover' in label:
+                            if inc.revenue == 0: inc.revenue = abs(val)
                         elif 'ebit' in label or 'betriebsergebnis' in label or 'operating performance' in label or 'operating result' in label:
-                            if inc.ebit == 0: inc.ebit = val
-                        elif 'net income' in label or 'konzernergebnis' in label or 'consolidated net profit' in label:
-                            if inc.net_income == 0: inc.net_income = val
+                            if inc.ebit == 0: inc.ebit = val # EBIT can be negative
+                        elif 'depreciation' in label or 'amortisation' in label or 'amortization' in label or 'abschreibungen' in label:
+                            if inc.da == 0: inc.da = abs(val)
+                        elif 'net income' in label or 'konzernergebnis' in label or 'net profit' in label or 'profit for the period' in label:
+                            if inc.net_income == 0: inc.net_income = val # Net Income can be negative
                             
                     elif stmt_type == 'balance_sheet':
                         if 'cash and' in label or 'zahlungsmittel' in label or 'bank balances' in label or 'cash in hand' in label:
-                            if bal.cash == 0: bal.cash = val
-                        elif 'total assets' in label or 'summe aktiva' in label:
-                            if bal.total_assets == 0: bal.total_assets = val
-                        elif 'financial liabilities' in label or 'finanzverbindlichkeiten' in label or 'financial loans' in label:
-                            bal.total_debt += val 
+                            if bal.cash == 0: bal.cash = abs(val)
+                        elif 'total assets' in label or 'summe aktiva' in label or 'bilanzsumme' in label:
+                            if bal.total_assets == 0: bal.total_assets = abs(val)
+                        elif 'financial liabilities' in label or 'finanzverbindlichkeiten' in label or 'borrowings' in label or 'schulden' in label or 'debt' in label:
+                            bal.total_debt += abs(val)
                             
                     elif stmt_type == 'cash_flow':
-                        if 'cash flow from operating activities' in label or 'laufende geschäftstätigkeit' in label:
+                        if 'cash flow from operating' in label or 'laufende geschäftstätigkeit' in label or 'net cash from operating' in label:
                             if cf.operating_cash_flow == 0: cf.operating_cash_flow = val
-                        elif 'property, plant and equipment' in label or 'sachanlagen' in label:
+                        elif 'property, plant' in label or 'sachanlagen' in label or 'capital expenditure' in label or 'capex' in label or 'intangible assets' in label:
                             if cf.capex == 0: cf.capex = abs(val)
 
     # SNIPER LLM FALLBACK TRIGGER

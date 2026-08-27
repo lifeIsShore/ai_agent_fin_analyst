@@ -30,29 +30,33 @@ def locate_statement_pages(filepath: str) -> dict:
 
     found_pages = {}
     
-    # Regex Fast Path
-    print("  -> [Pre-Processor] Attempting Regex Fast Path...")
-    for page_num in range(len(doc)):
-        text = doc[page_num].get_text("text").lower()
+    # Header-Based Deterministic Path (Ignores TOC and Summary body text)
+    print("  -> [Pre-Processor] Attempting Header-Based Fast Path...")
+    for page_num in range(min(100, len(doc))):
+        headers = get_large_text(doc[page_num])
+        if not headers: continue
         
-        if "statement of profit or loss" in text or "gewinn- und verlustrechnung" in text:
+        combined_header = " ".join(headers).lower()
+        
+        if "statement of profit or loss" in combined_header or "gewinn- und verlustrechnung" in combined_header or "income statement" in combined_header:
             if "income_statement" not in found_pages:
                 found_pages["income_statement"] = page_num
                 
-        if "statement of financial position" in text or "balance sheet" in text or "bilanz" in text:
+        if "statement of financial position" in combined_header or "balance sheet" in combined_header or "bilanz" in combined_header:
             if "balance_sheet" not in found_pages:
                 found_pages["balance_sheet"] = page_num
                 
-        if "statement of cash flows" in text or "kapitalflussrechnung" in text:
+        if "statement of cash flows" in combined_header or "kapitalflussrechnung" in combined_header:
             if "cash_flow" not in found_pages:
                 found_pages["cash_flow"] = page_num
 
         if len(found_pages) == 3:
-            print("  -> [Pre-Processor] Regex Fast Path SUCCESS!")
+            print("  -> [Pre-Processor] Header-Based Fast Path SUCCESS!")
             doc.close()
             return found_pages
 
     # Fallback Path: Extract Semantic Titles
+
     print("  -> [Pre-Processor] Regex failed to find all 3. Falling back to Semantic Title Extraction...")
     toc_lines = []
     for page_num in range(min(100, len(doc))): # Search first 100 pages to save time
