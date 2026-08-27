@@ -76,7 +76,7 @@ def extract_financial_data(filepath: str, page_map: dict, year: int) -> CompanyF
                 lines = text.split('\n')
                 
                 for line in lines:
-                    label_match = re.match(r'^([a-zA-Z\s,\-\(\)]+)', line)
+                    label_match = re.match(r'^([a-zA-Z\s,\-\(\)\+/&]+)', line)
                     if not label_match: continue
                     label = label_match.group(1).lower().strip()
                     
@@ -89,9 +89,9 @@ def extract_financial_data(filepath: str, page_map: dict, year: int) -> CompanyF
                     if stmt_type == 'income_statement':
                         if 'revenue' in label or 'umsatz' in label or 'sales' in label or 'turnover' in label:
                             if inc.revenue == 0: inc.revenue = abs(val)
-                        elif 'ebit' in label or 'betriebsergebnis' in label or 'operating performance' in label or 'operating result' in label:
+                        elif ('ebit' in label and 'ebitda' not in label) or 'betriebsergebnis' in label or 'operating result' in label or 'operating profit' in label:
                             if inc.ebit == 0: inc.ebit = val # EBIT can be negative
-                        elif 'depreciation' in label or 'amortisation' in label or 'amortization' in label or 'abschreibungen' in label:
+                        elif ('depreciation' in label or 'amortisation' in label or 'amortization' in label or 'abschreibungen' in label) and 'ebitda' not in label:
                             if inc.da == 0: inc.da = abs(val)
                         elif 'net income' in label or 'konzernergebnis' in label or 'net profit' in label or 'profit for the period' in label:
                             if inc.net_income == 0: inc.net_income = val # Net Income can be negative
@@ -101,14 +101,14 @@ def extract_financial_data(filepath: str, page_map: dict, year: int) -> CompanyF
                             if bal.cash == 0: bal.cash = abs(val)
                         elif 'total assets' in label or 'summe aktiva' in label or 'bilanzsumme' in label:
                             if bal.total_assets == 0: bal.total_assets = abs(val)
-                        elif 'financial liabilities' in label or 'finanzverbindlichkeiten' in label or 'borrowings' in label or 'schulden' in label or 'debt' in label:
+                        elif 'financial liabilities' in label or 'liabilities to banks' in label or 'finanzverbindlichkeiten' in label or 'borrowings' in label or 'schulden' in label or 'debt' in label:
                             bal.total_debt += abs(val)
                             
                     elif stmt_type == 'cash_flow':
                         if 'cash flow from operating' in label or 'laufende geschäftstätigkeit' in label or 'net cash from operating' in label:
                             if cf.operating_cash_flow == 0: cf.operating_cash_flow = val
                         elif 'property, plant' in label or 'sachanlagen' in label or 'capital expenditure' in label or 'capex' in label or 'intangible assets' in label:
-                            if cf.capex == 0: cf.capex = abs(val)
+                            cf.capex += abs(val)
 
     # SNIPER LLM FALLBACK TRIGGER
     # If the regex completely failed to find Revenue or Total Assets (e.g. they equal 0),

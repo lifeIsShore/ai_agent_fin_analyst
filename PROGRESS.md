@@ -20,19 +20,20 @@ Update this as you go. This is what you (or an agent picking up this project) sh
 - [ ] Wrote the one-page business case
 
 ### Phase 2 — Second project (add Layer 3: enterprise systems)
-- [ ] Chosen project
-- [ ] Built v1 with real auth + a real integration (API/CRM/ERP)
-- [ ] Architecture entry
-- [ ] Shown to a real person, feedback captured
+- [x] Chosen project: **Advanced Multi-Year DCF Insight Engine**
+- [x] Built v1 with hybrid LLM-Regex architecture, SQLite Database, and deterministic Table Extractors
+- [x] Excel generation via OpenPyXL for DCF projection tracking
+- [x] Squashed OCR hallucination bugs, achieving high parity with manual €80/share calculations
 
 ### Phase 3 — Third project (Layer 4: full AI application)
-- [ ] Chosen project: **Advanced Multi-Year DCF Insight Engine**
-- [ ] Feature: Parse 5+ years of historical reports (folder ingestion) to calculate historical CAGRs and trends.
-- [ ] Feature: Build "Insight Generation Prompt" (LLM uses MD&A insights + historical data to dynamically project future growth rates year-by-year).
+- [ ] Feature: Orchestration Script. Fully automate PDF fetching for a target list of tickers from company IR sites/Edgar to feed the DCF Engine.
+- [ ] Feature: Analyst Consensus Agent. A standalone agent (`analyst_agent.py`) that scours the internet for Wall Street target prices to act as an external feature for ML training.
+- [ ] Feature: Fallback Logic. If PDF parsing fails entirely, automatically fallback to pulling historical data from Yahoo Finance API.
+- [ ] Feature: ML Price Prediction. Build a Machine Learning (XGBoost/RandomForest) script that trains on `valuations_v2.db` features (historical CAGRs, margins, management sentiment scores) to predict future stock prices.
+- [ ] Externalize Regex Config: Move string matchers (like "Liabilities to banks", "EBIT") into a `config.json` dictionary so non-technical users can add labels without editing python code.
 - [ ] Deployed somewhere real (not just localhost)
 - [ ] Monitoring/evaluation in place
 - [ ] Architecture entry
-- [ ] Pricing/GTM conversation had with a real prospective user
 
 ### Phase 4 — Portfolio & positioning
 - [ ] 3 projects documented with architecture diagrams + business cases
