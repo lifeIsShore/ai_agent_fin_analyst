@@ -10,10 +10,19 @@ warnings.filterwarnings('ignore')
 def load_data_from_db(db_path="valuations.db") -> pd.DataFrame:
     """Loads valuation data and qualitative scores from SQLite."""
     conn = sqlite3.connect(db_path)
-    query = """
+    
+    # Pragma check for consensus_target to ensure it exists
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(valuations_v2)")
+    columns = [col[1] for col in cursor.fetchall()]
+    
+    consensus_col = ", consensus_target" if "consensus_target" in columns else ", 0 as consensus_target"
+    
+    query = f"""
     SELECT ticker, date, wacc, base_target, 
            confidence_score, risk_score, governance_score,
            latest_ebit_margin, latest_net_margin, latest_roa
+           {consensus_col}
     FROM valuations_v2
     """
     df = pd.read_sql_query(query, conn)
@@ -68,17 +77,27 @@ def run_regression_engine():
     # A value of 1.20 means the market prices the stock at a 20% premium to our DCF.
     df['market_premium'] = df['current_price'] / df['base_target']
     
+    # Calculate Consensus Spread (How far Wall Street is from our DCF)
+    # e.g. if consensus is 150 and our DCF is 100, spread is 0.50 (+50%)
+    df['consensus_spread'] = (df['consensus_target'] / df['base_target']) - 1
+    # Handle cases where consensus_target is 0 (missing)
+    df.loc[df['consensus_target'] == 0, 'consensus_spread'] = 0
+    
     # 4. Prepare Regression Matrix
     print("\n[Regression] Building OLS Design Matrix...")
     
-    # Drop rows with null qualitative scores
-    df = df.dropna(subset=['confidence_score', 'risk_score', 'latest_ebit_margin'])
+    # Fill missing qualitative scores with 0
+    df['confidence_score'] = df['confidence_score'].fillna(0)
+    df['risk_score'] = df['risk_score'].fillna(0)
+    df['governance_score'] = df['governance_score'].fillna(0)
+    
+    df = df.dropna(subset=['latest_ebit_margin', 'latest_roa'])
     
     # Dependent variable (Y)
     y = df['market_premium']
     
     # Independent variables (X)
-    X = df[['confidence_score', 'risk_score', 'latest_ebit_margin', 'latest_roa']]
+    X = df[['confidence_score', 'risk_score', 'governance_score', 'latest_ebit_margin', 'consensus_spread']]
     
     # Add constant (intercept) to the model
     X = sm.add_constant(X)
