@@ -1,0 +1,17 @@
+{
+  "income_statement": {
+    "revenue": ["revenue", "umsatz", "sales", "turnover"],
+    "ebit": ["ebit", "betriebsergebnis", "operating result", "operating profit"],
+    "da": ["depreciation", "amortisation", "amortization", "abschreibungen"],
+    "net_income": ["net income", "konzernergebnis", "net profit", "profit for the period"]
+  },
+  "balance_sheet": {
+    "cash": ["cash and", "zahlungsmittel", "bank balances", "cash in hand"],
+    "total_assets": ["total assets", "summe aktiva", "bilanzsumme"],
+    "total_debt": ["financial liabilities", "liabilities to banks", "finanzverbindlichkeiten", "borrowings", "schulden", "debt"]
+  },
+  "cash_flow": {
+    "operating_cash_flow": ["cash flow from operating", "laufende geschäftstätigkeit", "net cash from operating"],
+    "capex": ["property, plant", "sachanlagen", "capital expenditure", "capex", "intangible assets"]
+  }
+}

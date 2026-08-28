@@ -26,11 +26,12 @@ Update this as you go. This is what you (or an agent picking up this project) sh
 - [x] Squashed OCR hallucination bugs, achieving high parity with manual €80/share calculations
 
 ### Phase 3 — Third project (Layer 4: full AI application)
-- [ ] Feature: Orchestration Script. Fully automate PDF fetching for a target list of tickers from company IR sites/Edgar to feed the DCF Engine.
-- [ ] Feature: Analyst Consensus Agent. A standalone agent (`analyst_agent.py`) that scours the internet for Wall Street target prices to act as an external feature for ML training.
-- [ ] Feature: Fallback Logic. If PDF parsing fails entirely, automatically fallback to pulling historical data from Yahoo Finance API.
-- [ ] Feature: ML Price Prediction. Build a Machine Learning (XGBoost/RandomForest) script that trains on `valuations_v2.db` features (historical CAGRs, margins, management sentiment scores) to predict future stock prices.
-- [ ] Externalize Regex Config: Move string matchers (like "Liabilities to banks", "EBIT") into a `config.json` dictionary so non-technical users can add labels without editing python code.
+- [x] Feature: Qualitative Macro-Scoring. Use LLM to grade MD&A and Risk Factors for Confidence, Risk, and Governance.
+- [x] Feature: Orchestration Script. Fully automate PDF fetching for a target list of tickers from company IR sites/Edgar to feed the DCF Engine.
+- [x] Feature: Analyst Consensus Agent. A standalone agent (`analyst_agent.py`) that scours the internet for Wall Street target prices to act as an external feature for ML training.
+- [x] Feature: Fallback Logic. If PDF parsing fails entirely, automatically fallback to pulling historical data from Yahoo Finance API.
+- [ ] Feature: Statistical Regression Engine (OLS). Build an explainable statistical model to predict Market-Premium-to-DCF based on `valuations_v2.db` features (margins, management confidence, risk).
+- [x] Externalize Regex Config: Move string matchers (like "Liabilities to banks", "EBIT") into a `config.json` dictionary so non-technical users can add labels without editing python code.
 - [ ] Deployed somewhere real (not just localhost)
 - [ ] Monitoring/evaluation in place
 - [ ] Architecture entry

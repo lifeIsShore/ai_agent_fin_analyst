@@ -8,3 +8,4 @@ reportlab
 pillow
 yfinance
 pdfplumber
+statsmodels

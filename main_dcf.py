@@ -1,7 +1,8 @@
 import argparse
 import os
 import json
-from pre_processor import isolate_financial_pages
+from pre_processor import isolate_financial_pages, locate_qualitative_pages, extract_qualitative_text
+from qualitative_analyzer import analyze_qualitative_factors
 from llm_extractor_dcf import extract_financials_with_llm
 from market_data import get_market_data
 from dcf_engine import calculate_wacc, project_financials
@@ -32,6 +33,17 @@ def run_dcf_pipeline(pdf_path: str, ticker: str):
     print(f"Base Revenue: {historical_data.income_statement.revenue}")
     print(f"Base EBIT: {historical_data.income_statement.ebit}")
     
+    # 2.5 Qualitative Macro-Scoring
+    print("\n[2.5] Extracting Qualitative Factors (MD&A & Risks)...")
+    qual_pages = locate_qualitative_pages(pdf_path)
+    qual_text = extract_qualitative_text(pdf_path, qual_pages)
+    
+    qual_scores = analyze_qualitative_factors(
+        mda_text=qual_text.get('mda', ''), 
+        risk_text=qual_text.get('risk_factors', '')
+    )
+    historical_data.qualitative_scores = qual_scores
+    
     # 3. Pull Market Data
     print("[3] Pulling live market data...")
     market_data = get_market_data(ticker)
@@ -49,6 +61,15 @@ def run_dcf_pipeline(pdf_path: str, ticker: str):
         print(f"\n{scenario} Case (Growth: {data['rev_growth']:.1%})")
         print(f"  Target Price (Perpetuity Growth): €{data['implied_price_pg']:,.2f}")
         print(f"  Target Price (Exit Multiple):     €{data['implied_price_mult']:,.2f}")
+        
+    if historical_data.qualitative_scores:
+        qs = historical_data.qualitative_scores
+        print("\n--- QUALITATIVE SCORES ---")
+        print(f"Confidence: {qs.confidence_score}/100")
+        print(f"Risk & Transparency: {qs.risk_score}/100")
+        print(f"Governance & ESG: {qs.governance_score}/100")
+        print(f"Rationale: {qs.rationale}")
+        
     print("-------------------------")
 
 if __name__ == "__main__":

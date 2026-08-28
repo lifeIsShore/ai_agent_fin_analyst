@@ -8,7 +8,81 @@ from llm_extractor_dcf import extract_mda_with_llm, generate_dynamic_scenarios
 from market_data import get_market_data
 from dcf_engine import calculate_wacc, project_financials
 from dcf_excel_exporter import export_dcf_to_excel
+from models_dcf import CompanyFinancials, IncomeStatement, BalanceSheet, CashFlowStatement
+from llm_extractor_dcf import DynamicScenarios
+import yfinance as yf
+import pandas as pd
+import datetime
 
+def fallback_to_yfinance_historicals(ticker_symbol: str) -> list[CompanyFinancials]:
+    """Fallback: Pulls historical financials from Yahoo Finance if PDFs are missing."""
+    print(f"\n[Fallback] Pulling historical data from Yahoo Finance for {ticker_symbol}...")
+    try:
+        ticker = yf.Ticker(ticker_symbol)
+        inc = ticker.income_stmt
+        bal = ticker.balance_sheet
+        cf = ticker.cashflow
+        
+        if inc.empty or bal.empty or cf.empty:
+            print("  [Error] Yahoo Finance returned empty tables.")
+            return []
+            
+        historical_data_list = []
+        # Get the columns (dates) available across all 3 statements, up to 4 years
+        dates = inc.columns[:4]
+        
+        for date in reversed(dates):  # Process oldest to newest
+            year = date.year
+            
+            # Helper to safely extract values from yfinance dataframe
+            def get_val(df, keys):
+                for k in keys:
+                    if k in df.index:
+                        val = df.loc[k, date]
+                        if pd.notna(val): return float(val)
+                return 0.0
+                
+            # Income Statement
+            revenue = get_val(inc, ["Total Revenue", "Operating Revenue"])
+            ebit = get_val(inc, ["EBIT", "Operating Income"])
+            da = get_val(inc, ["Depreciation And Amortization", "Reconciled Depreciation"])
+            net_income = get_val(inc, ["Net Income", "Net Income Common Stockholders"])
+            
+            # Balance Sheet
+            cash = get_val(bal, ["Cash And Cash Equivalents", "Total Cash And Short Term Investments"])
+            total_assets = get_val(bal, ["Total Assets"])
+            total_debt = get_val(bal, ["Total Debt"])
+            
+            # Cash Flow
+            operating_cash_flow = get_val(cf, ["Operating Cash Flow"])
+            capex = get_val(cf, ["Capital Expenditure"])
+            
+            income_statement = IncomeStatement(
+                revenue=abs(revenue), cogs=0, sga=0, da=abs(da), 
+                ebit=ebit, interest_expense=0, taxes=0, net_income=net_income
+            )
+            balance_sheet = BalanceSheet(
+                cash=abs(cash), current_assets=0, total_assets=abs(total_assets), 
+                current_liabilities=0, total_debt=abs(total_debt), total_liabilities=0, shareholders_equity=0
+            )
+            cash_flow = CashFlowStatement(operating_cash_flow=operating_cash_flow, capex=abs(capex))
+            
+            data = CompanyFinancials(
+                company_name=ticker_symbol,
+                ticker=ticker_symbol,
+                year=year,
+                income_statement=income_statement,
+                balance_sheet=balance_sheet,
+                cash_flow=cash_flow,
+                management_assumptions="Historical data retrieved via Yahoo Finance API fallback. No qualitative text available."
+            )
+            historical_data_list.append(data)
+            
+        print(f"  [Success] Retrieved {len(historical_data_list)} years of historicals from yfinance.")
+        return historical_data_list
+    except Exception as e:
+        print(f"  [Error] yfinance fallback failed: {e}")
+        return []
 def extract_year_from_filename(filename: str) -> int:
     match = re.search(r'(20\d{2})', filename)
     if match:
@@ -20,12 +94,15 @@ def run_batch_pipeline(folder_path: str, ticker: str):
     print(f"Folder: {folder_path}")
     
     pdf_files = glob.glob(os.path.join(folder_path, "*.pdf"))
+    historical_data_list = []
+    
     if not pdf_files:
         print("No PDF files found in the specified folder.")
-        return
-        
-    print(f"Found {len(pdf_files)} PDF reports.")
-    historical_data_list = []
+        historical_data_list = fallback_to_yfinance_historicals(ticker)
+        if not historical_data_list:
+            return
+    else:
+        print(f"Found {len(pdf_files)} PDF reports.")
     
     for pdf_path in pdf_files:
         filename = os.path.basename(pdf_path)
@@ -52,8 +129,10 @@ def run_batch_pipeline(folder_path: str, ticker: str):
         print(f"  -> Extracted Year {data.year} (Revenue: {data.income_statement.revenue})")
             
     if not historical_data_list:
-        print("No historical data could be extracted.")
-        return
+        print("No historical data could be extracted from PDFs.")
+        historical_data_list = fallback_to_yfinance_historicals(ticker)
+        if not historical_data_list:
+            return
         
     # Sort chronologically
     historical_data_list.sort(key=lambda x: x.year)
@@ -112,7 +191,11 @@ def run_batch_pipeline(folder_path: str, ticker: str):
     assets = most_recent_data.balance_sheet.total_assets
     roa = most_recent_data.income_statement.net_income / assets if assets else 0
     
-    c.execute("INSERT INTO valuations_v2 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
+    c.execute("""INSERT INTO valuations_v2 (
+                 ticker, date, wacc, bear_target, base_target, bull_target,
+                 confidence_score, rationale, latest_ebit_margin, latest_net_margin,
+                 latest_capex_to_rev, latest_roa, proj_y1_rev, proj_y1_ufcf
+                 ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", 
               (ticker, today, wacc, 
                results['Bear']['implied_price_pg'], 
                results['Base']['implied_price_pg'], 

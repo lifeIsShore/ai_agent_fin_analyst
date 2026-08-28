@@ -24,6 +24,12 @@ class CashFlowStatement(BaseModel):
     operating_cash_flow: float = Field(description="Net cash provided by operating activities.")
     capex: float = Field(description="Capital expenditures (purchases of property, plant, and equipment). Usually a negative number, convert to positive.")
 
+class QualitativeScores(BaseModel):
+    confidence_score: int = Field(description="Management confidence score (0-100). Higher is more optimistic.")
+    risk_score: int = Field(description="Risk and transparency score (0-100). Higher means safer and more transparent.")
+    governance_score: int = Field(description="Governance and ESG score (0-100). Higher means better governance.")
+    rationale: str = Field(description="A short summary explaining why these scores were given based on MD&A and Risk Factors.")
+
 class CompanyFinancials(BaseModel):
     company_name: str = Field(description="Name of the company.")
     ticker: str = Field(description="Stock ticker symbol if available, else 'PRIVATE'.")
@@ -32,6 +38,7 @@ class CompanyFinancials(BaseModel):
     balance_sheet: BalanceSheet
     cash_flow: CashFlowStatement
     management_assumptions: str = Field(description="Any forward-looking commentary on expected growth, margins, or capex.")
+    qualitative_scores: Optional[QualitativeScores] = Field(default=None, description="Qualitative macro scores extracted from MD&A and Risk Factors.")
 
 class ScenarioBase(BaseModel):
     revenue_growth: float = Field(description="Projected annual revenue growth rate (e.g., 0.05 for 5%). Must be between -1.0 and 5.0.", ge=-1.0, le=5.0)

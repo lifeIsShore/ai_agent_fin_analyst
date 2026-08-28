@@ -109,3 +109,64 @@ def locate_statement_pages(filepath: str) -> dict:
     except Exception as e:
         print(f"  -> [Pre-Processor] LLM Fallback failed: {e}")
         return found_pages
+
+def locate_qualitative_pages(filepath: str) -> dict:
+    """
+    Returns a dictionary of page numbers for qualitative sections:
+    {'mda': X, 'risk_factors': Y}
+    """
+    try:
+        doc = fitz.open(filepath)
+    except Exception as e:
+        print(f"Error opening PDF {filepath}: {e}")
+        return {}
+
+    found_pages = {}
+    print("  -> [Pre-Processor] Attempting to locate qualitative pages via Regex...")
+    
+    # We scan the first 150 pages assuming MD&A/Risk are early on
+    for page_num in range(min(150, len(doc))):
+        headers = get_large_text(doc[page_num])
+        if not headers: continue
+        
+        combined_header = " ".join(headers).lower()
+        
+        # Item 7. Management's Discussion and Analysis
+        if "management's discussion" in combined_header or "item 7" in combined_header:
+            if "mda" not in found_pages:
+                found_pages["mda"] = page_num
+                
+        # Item 1A. Risk Factors
+        if "risk factors" in combined_header or "item 1a" in combined_header:
+            if "risk_factors" not in found_pages:
+                found_pages["risk_factors"] = page_num
+                
+        if len(found_pages) == 2:
+            break
+            
+    print(f"  -> [Pre-Processor] Qualitative pages found: {found_pages}")
+    doc.close()
+    return found_pages
+
+def extract_qualitative_text(filepath: str, pages_dict: dict, max_pages: int = 3) -> dict:
+    """
+    Extracts up to `max_pages` of text for each identified section.
+    Returns: {'mda': "...", 'risk_factors': "..."}
+    """
+    results = {"mda": "", "risk_factors": ""}
+    
+    try:
+        doc = fitz.open(filepath)
+    except Exception as e:
+        print(f"Error opening PDF for text extraction: {e}")
+        return results
+
+    for key, start_page in pages_dict.items():
+        extracted_text = []
+        for i in range(start_page, min(start_page + max_pages, len(doc))):
+            text = doc[i].get_text("text")
+            extracted_text.append(text)
+        results[key] = "\n".join(extracted_text)
+
+    doc.close()
+    return results
