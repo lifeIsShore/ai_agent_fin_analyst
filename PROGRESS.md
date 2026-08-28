@@ -37,9 +37,9 @@ Update this as you go. This is what you (or an agent picking up this project) sh
 - [ ] Architecture entry
 
 ### Phase 4 — Portfolio & positioning
-- [ ] 3 projects documented with architecture diagrams + business cases
-- [ ] One-pager written: "I am a business technologist who..." (your positioning statement)
-- [ ] Target roles list finalized (see `ROADMAP.md` §4)
+- [x] 3 projects documented with architecture diagrams + business cases
+- [x] One-pager written: "I am a business technologist who..." (your positioning statement)
+- [x] Target roles list finalized (see `ROADMAP.md` §4)
 - [ ] Applied / pitched to at least 3 real opportunities
 
 ## Notes / log
@@ -47,3 +47,5 @@ Update this as you go. This is what you (or an agent picking up this project) sh
 
 - 2026-08-25: Project initialized.
 - 2026-08-26: Completed v1 of Project 1 (Invoice Extractor). Transitioning to Project 2 (DCF Agent with API integration).
+- 2026-08-28: Completed Project 2 (Autonomous AI Hedge Fund Analyst). 
+- **CRITICAL NOTE ON STATISTICAL MODEL (2026-08-28):** The OLS Regression Engine returned an R^2 of 0.988 with 11 companies and 5 features. This is a severe case of overfitting (Curse of Dimensionality). The model is memorizing noise rather than learning. Next step for mathematical validity is to scale the orchestration script to fetch data for 50-100 companies minimum (10-20 observations per feature) to see the true, stable R^2 (likely 0.40 - 0.60).
